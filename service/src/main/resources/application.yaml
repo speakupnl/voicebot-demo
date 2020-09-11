@@ -1,0 +1,33 @@
+---
+
+logging:
+  level:
+    # Set log level to debug by default:
+    nl.speakup: DEBUG
+
+nlu:
+  # Endpoint for the Rasa NLU component. The default matches the port used in the accompanying
+  # docker-compose file.
+  endpoint: "http://localhost:5005/model/parse"
+
+speakup:
+  voice:
+    endpoint:
+      # The external URI on which this service is accessible from the internet. Used for performing
+      # callbacks when requesting an audio stream from the voice API. For development, ngrok can
+      # be used for example.
+      external-uri: "https://510043b99033.ngrok.io"
+    api:
+      # The base REST endpoint of the Speakup voice API.
+      api-endpoint: "https://api.dev.hub.speakup.nl/voice"
+
+      # The websocket endpoint of the Speakup voice API, from which resource events are retrieved.
+      event-endpoint: "https://api.dev.hub.speakup.nl/voice/events"
+
+      # The OAuth2 token endpoint to use when retrieving an access token for API access. Typically
+      # points to a Speakup identity and access provider.
+      token-endpoint: "https://account.dev.hub.speakup.nl/auth/realms/public/protocol/openid-connect/token"
+
+      # Your OAuth2 application / client ID and secret:
+      application-id: my-client-id
+      application-secret: supersecret

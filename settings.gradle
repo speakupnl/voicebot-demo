@@ -1,0 +1,4 @@
+rootProject.name = 'voicebot-demo'
+
+include ':service'
+include ':nlu'

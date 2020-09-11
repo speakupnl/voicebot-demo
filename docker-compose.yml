@@ -1,0 +1,8 @@
+version: '3.3'
+
+services:
+
+  rasa:
+    image: 'docker.speakup.nl/nl.speakup.voice/nlu:latest'
+    ports:
+      - "5005:5005"

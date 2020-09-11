@@ -1,0 +1,87 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.1.RELEASE' apply false
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE' apply false
+	id 'com.bmuschko.docker-remote-api' version '6.5.0' apply false
+}
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage;
+
+allprojects {
+	group = 'nl.speakup.voice'
+	version = '0.1.0-SNAPSHOT'
+}
+
+subprojects {
+	apply plugin: 'base'
+
+	task dockerCopyDocker(type: Copy, group: "docker") {
+		into "${buildDir}/docker"
+		from "src/main/docker"
+	}
+
+	task dockerBuildImage(type: DockerBuildImage, group: "docker") {
+		dependsOn dockerCopyDocker
+
+		inputDir = file("${buildDir}/docker")
+
+		images.add("docker.speakup.nl/${project.group}/${project.name}:${project.version}")
+		images.add("docker.speakup.nl/${project.group}/${project.name}:latest")
+	}
+
+	build.dependsOn dockerBuildImage
+}
+
+project(':service') {
+	apply plugin: 'java'
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'com.bmuschko.docker-remote-api'
+
+	sourceCompatibility = '14'
+
+	repositories {
+		mavenCentral()
+	}
+
+	dependencyManagement {
+		imports {
+			// https://cloud.google.com/text-to-speech/docs/reference/libraries#client-libraries-install-java
+			mavenBom 'com.google.cloud:libraries-bom:8.0.0'
+		}
+	}
+
+	dependencies {
+		implementation 'org.springframework.boot:spring-boot-starter-webflux'
+		implementation 'com.google.cloud:google-cloud-texttospeech'
+		implementation 'com.google.cloud:google-cloud-speech'
+
+		testImplementation('org.springframework.boot:spring-boot-starter-test') {
+			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+		}
+		testImplementation 'io.projectreactor:reactor-test'
+	}
+
+	test {
+		useJUnitPlatform()
+	}
+
+	task dockerCopyBootArtifact(type: Copy, group: "docker") {
+		dependsOn bootJar
+
+		into "${buildDir}/docker/app"
+		from "${buildDir}/libs/${project.name}-${project.version}.jar"
+	}
+
+	dockerBuildImage.dependsOn dockerCopyBootArtifact
+}
+
+project(':nlu') {
+	apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
+
+	task dockerCopyRasaProject(type: Copy, group: "docker") {
+		into "${buildDir}/docker/rasaproject"
+		from "src/main/rasa"
+	}
+
+	dockerBuildImage.dependsOn dockerCopyRasaProject
+}
