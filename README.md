@@ -1,3 +1,16 @@
+This project contains a demonstration on how to use the (preview) Speakup voice APIs in combination
+with Google text-to-speech, Google speech-to-text and the [Rasa](https://rasa.com) conversational
+AI. The result is a small voice driven application that can perform actions based on a simple
+(spoken) dialogue with the caller.
+
+One of the possible applications would be as an alternative for the classic IVR menu (press 1 
+for ...). Instead the caller can explain his or her intent for the bot to understand and the bot
+can even answer certain queries without human intervention.
+
+This is by no means intended as a completed product, instead it is a demonstration of what ca be
+accomplished by combining a few simple API endpoints into useful functionality. Feel free to
+expand on this, propose changes, use it for inspiration or simply to try it out!
+
 Prerequisites
 =============
 
